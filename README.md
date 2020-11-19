@@ -5,6 +5,8 @@
 
 <!-- badges: start -->
 
+[![Travis build
+status](https://travis-ci.com/santiago1234/phdpopgene.svg?branch=master)](https://travis-ci.com/santiago1234/phdpopgene)
 <!-- badges: end -->
 
 The goal of phdpopgene is to …

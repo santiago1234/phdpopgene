@@ -8,13 +8,18 @@ Authors@R:
            email = "santiagogmm@hotmail.com",
            comment = c(ORCID = "YOUR-ORCID-ID"))
 Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to
-    pick a license
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports: 
-    VariantAnnotation
+    VariantAnnotation (>= 1.36.0),
+    magrittr,
+    tidyr (>= 1.1.2),
+    dplyr (>= 1.0.2),
+    purrr (>= 0.3.4),
+    stringr (>= 1.4.0),
+    SummarizedExperiment (>= 1.20.0)
 Depends: 
-    R (>= 2.10)
+    R (>= 3.6.0)
