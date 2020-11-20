@@ -14,7 +14,8 @@ The goal of phdpopgene is to …
 ## Installation
 
 You can install the released version of phdpopgene from
-[CRAN](https://CRAN.R-project.org) with:
+[GitHub](https://github.com/santiago1234/rotation-demogAncestry/blob/main/src/compute_genetic_load.R)
+with:
 
 ``` r
 devtools::install_github("santiago1234/phdpopgene")

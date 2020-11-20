@@ -9,7 +9,8 @@ get_var_annotation(vcf_genotypes, vcf_annotation, chrn)
 \arguments{
 \item{vcf_genotypes}{CollapsedVCF, genotypes vcf}
 
-\item{vcf_annotation}{CollapsedVCF, object read with \code{VariantAnnotation::readVcf}}
+\item{vcf_annotation}{CollapsedVCF -> \code{VariantAnnotation::readVcf}. The annotaion for
+the variants in \code{vcf_genotypes}}
 
 \item{chrn}{int or chr, chromosome name}
 }

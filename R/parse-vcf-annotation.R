@@ -20,14 +20,12 @@
 #' @examples
 #' get_FUNSEQ(test_anno_vcf)
 get_FUNSEQ <- function(vcf_annotation) {
-
   VariantAnnotation::info(vcf_annotation) %>%
-    tidyr::as_tibble(rownames = 'varid') %>%
+    tidyr::as_tibble(rownames = "varid") %>%
     dplyr::select(.data$varid, .data$FUNSEQ) %>%
     dplyr::mutate(
       FUNSEQ = purrr::map_dbl(.data$FUNSEQ, function(x) x[[1]]) # extract 1st element
     )
-
 }
 
 
@@ -56,13 +54,11 @@ get_CSQ <- function(vcf_annotation) {
     base::unlist()
 
   VariantAnnotation::info(vcf_annotation) %>%
-    tidyr::as_tibble(rownames = 'varid') %>%
+    tidyr::as_tibble(rownames = "varid") %>%
     dplyr::select(.data$varid, .data$CSQ) %>%
     dplyr::mutate(CSQ = purrr::map_chr(.data$CSQ, function(x) x[[1]])) %>%
     tidyr::separate(.data$CSQ, into = csq_names, sep = "\\|") %>%
     dplyr::select(.data$varid, .data$Consequence)
-
-
 }
 
 
@@ -91,7 +87,7 @@ add_rsids_to_funseq <- function(vcf_genotypes, info_data, chrn) {
   # which variant ids are nat an rsID and start with chrn?
   ids_chr <- info_data %>%
     dplyr::filter(stringr::str_detect(.data$varid, paste0("^", chrn))) %>%
-    dplyr::rename(range_id =  .data$varid)
+    dplyr::rename(range_id = .data$varid)
 
   # which are rs ids
   ids_rs <- info_data %>%
@@ -112,9 +108,11 @@ add_rsids_to_funseq <- function(vcf_genotypes, info_data, chrn) {
     dplyr::mutate(
       ALT = purrr::map_chr(.data$ALT, function(x) x[[1]]),
       range_id = paste(.data$seqnames, ":",
-                       .data$start, "_",
-                       .data$REF, "/",
-                       .data$ALT, sep = "")
+        .data$start, "_",
+        .data$REF, "/",
+        .data$ALT,
+        sep = ""
+      )
     ) %>%
     dplyr::select(.data$varid, .data$range_id)
 
@@ -122,7 +120,6 @@ add_rsids_to_funseq <- function(vcf_genotypes, info_data, chrn) {
     dplyr::bind_rows(
       dplyr::inner_join(map_of_ids, ids_rs, by = "varid")
     )
-
 }
 
 
@@ -132,7 +129,8 @@ add_rsids_to_funseq <- function(vcf_genotypes, info_data, chrn) {
 #' the annotation vcf data
 #'
 #' @inheritParams add_rsids_to_funseq
-#' @param vcf_annotation CollapsedVCF, object read with \code{VariantAnnotation::readVcf}
+#' @param vcf_annotation CollapsedVCF -> \code{VariantAnnotation::readVcf}. The annotaion for
+#' the variants in \code{vcf_genotypes}
 #' @return A data frame
 #' \describe{
 #'   \item{varid}{Variant ID}
@@ -145,13 +143,10 @@ add_rsids_to_funseq <- function(vcf_genotypes, info_data, chrn) {
 #' @examples
 #' get_var_annotation(test_vcf, test_anno_vcf, 22)
 get_var_annotation <- function(vcf_genotypes, vcf_annotation, chrn) {
-
   funseq_scores <- get_FUNSEQ(vcf_annotation)
   funseq_scores <- add_rsids_to_funseq(vcf_genotypes, funseq_scores, chrn)
   csq <- get_CSQ(vcf_annotation)
   csq <- add_rsids_to_funseq(vcf_genotypes, csq, chrn)
 
   dplyr::inner_join(csq, funseq_scores)
-
 }
-
