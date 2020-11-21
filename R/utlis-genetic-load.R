@@ -139,15 +139,26 @@ funq_load_summary <- function(geno_anno_mlong) {
 #'
 #' @inheritParams get_var_annotation
 #' @param cores int, the number of cores used for parallel computation. The
-#' computation is parallelized over the indivuals (samples)
+#' computation is parallelized over the individuals (samples)
 #'
 #' @return A list with two elements
-#'
-#' @examples
-genetic_load_FUNSEQ_and_Consequence_summary <- function(vcf_genotypes, vcf_annotation, chrn, cores = 6) {
+genetic_load_FUNSEQ_and_Consequence_summary <- function(vcf_genotypes, vcf_annotation, chr, cores = 6) {
+
+  # sanity check
+  # check given chromosome matches range in vcf files
+  rng <- SummarizedExperiment::rowRanges(vcf_genotypes)
+  chr_found <- GenomicRanges::seqnames(rng) %>%
+    as.character() %>%
+    unique()
+
+  if (!chr_found == chr) {
+    stop("Supplied chromosome does not match chromosome in VCF file")
+  }
+
+
 
   genotipos <- get_genotype(vcf_genotypes)
-  annotation <- get_var_annotation(vcf_genotypes, vcf_annotation, chrn) %>%
+  annotation <- get_var_annotation(vcf_genotypes, vcf_annotation, chr) %>%
     dplyr::select(-.data$range_id)
 
   message("Computing load ...")

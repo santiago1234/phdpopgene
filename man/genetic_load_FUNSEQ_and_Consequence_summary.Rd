@@ -7,7 +7,7 @@
 genetic_load_FUNSEQ_and_Consequence_summary(
   vcf_genotypes,
   vcf_annotation,
-  chrn,
+  chr,
   cores = 6
 )
 }
@@ -17,10 +17,8 @@ genetic_load_FUNSEQ_and_Consequence_summary(
 \item{vcf_annotation}{CollapsedVCF -> \code{VariantAnnotation::readVcf}. The annotaion for
 the variants in \code{vcf_genotypes}}
 
-\item{chrn}{int or chr, chromosome name}
-
 \item{cores}{int, the number of cores used for parallel computation. The
-computation is parallelized over the indivuals (samples)}
+computation is parallelized over the individuals (samples)}
 }
 \value{
 A list with two elements

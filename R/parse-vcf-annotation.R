@@ -106,7 +106,7 @@ add_rsids_to_funseq <- function(vcf_genotypes, info_data, chrn) {
     as.data.frame() %>%
     tidyr::as_tibble() %>%
     dplyr::mutate(
-      ALT = purrr::map_chr(.data$ALT, function(x) as.character(x[[1]])),
+      ALT = purrr::map_chr(.data$ALT, function(x) as.character(x[[1]])), # character because the ALT is a Biostring
       range_id = paste(.data$seqnames, ":",
         .data$start, "_",
         .data$REF, "/",
