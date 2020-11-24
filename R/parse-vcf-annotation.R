@@ -143,10 +143,14 @@ add_rsids_to_funseq <- function(vcf_genotypes, info_data, chrn) {
 #' @examples
 #' get_var_annotation(test_vcf, test_anno_vcf, 22)
 get_var_annotation <- function(vcf_genotypes, vcf_annotation, chrn) {
-  funseq_scores <- get_FUNSEQ(vcf_annotation)
-  funseq_scores <- add_rsids_to_funseq(vcf_genotypes, funseq_scores, chrn)
-  csq <- get_CSQ(vcf_annotation)
-  csq <- add_rsids_to_funseq(vcf_genotypes, csq, chrn)
 
-  dplyr::inner_join(csq, funseq_scores)
+  funseq_scores <- get_FUNSEQ(vcf_annotation)
+  funseq_scores <- add_rsids_to_funseq(vcf_genotypes, funseq_scores, chrn) %>%
+    dplyr::select(-.data$range_id)
+
+  csq <- get_CSQ(vcf_annotation)
+  csq <- add_rsids_to_funseq(vcf_genotypes, csq, chrn) %>%
+    dplyr::select(-.data$range_id)
+
+  dplyr::inner_join(csq, funseq_scores, by = "varid")
 }

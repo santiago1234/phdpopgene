@@ -18,16 +18,16 @@ count_alt_alleles <- function(gtype) {
 #' Counts the number of alternative alleles
 #'
 #' A funseq score greater than 1.5 is considered deleterious. An indicator function
-#' that returns true if the variant is deleterious multiplied by the numer
+#' that returns true if the variant is deleterious multiplied by the number
 #' of alternative alleles in the genotype.
 #'
-#'
-#' @inheritParams count_alt_alleles
+#' @param alt_alleles int, how many alternative alles are in the genotype?,
+#' for example 0|0 is 0, 1|0 is 1,
 #' @param funseqscore the funseq score
 #' @return a number 0, 1, or 2.
-funseq_load <- function(gtype, funseqscore) {
+funseq_load <- function(alt_alleles, funseqscore) {
   cut_off_val <- 1.5
-  (funseqscore > cut_off_val) * count_alt_alleles(gtype)
+  (funseqscore > cut_off_val) * alt_alleles
 }
 
 
@@ -54,7 +54,9 @@ get_genotype <- function(vcf_genotypes) {
 #' Merge genotypes with annotation
 #'
 #' Merges the genotypes with the annotation (FUNSEQ and Consequences)
-#' and puts the table in long format
+#' and puts the table in long format. This function also removes
+#' all sites, for each individual-sample, that are homozygous (0|0) since
+#' these sites don't contribute to the load.
 #'
 #' @param genotipos the tidy genotypes, output of \code{\link{get_genotype}}
 #' @param h_samples vector of samples, a subset of the samples
@@ -75,7 +77,10 @@ merge_genotypes_with_annotation <- function(genotipos, annotation, h_samples) {
     tidyr::pivot_longer(
       cols = -c(.data$varid, .data$FUNSEQ, .data$Consequence),
       names_to = "individual", values_to = "genotype"
-    )
+    ) %>%
+    dplyr::filter(.data$genotype != "0|0") %>%
+    dplyr::mutate(n_alternative = purrr::map_int(.data$genotype, .f = count_alt_alleles))
+
 }
 
 
@@ -98,11 +103,8 @@ merge_genotypes_with_annotation <- function(genotipos, annotation, h_samples) {
 #' }
 consequence_summary <- function(geno_anno_mlong) {
   geno_anno_mlong %>%
-    dplyr::mutate(
-      n_alt_alleles = purrr::map_int(.data$genotype, .f = count_alt_alleles)
-    ) %>%
     dplyr::group_by(individual, Consequence) %>%
-    dplyr::summarise(n_variants = sum(n_alt_alleles)) %>%
+    dplyr::summarise(n_variants = sum(n_alternative)) %>%
     dplyr::ungroup()
 }
 
@@ -125,7 +127,7 @@ consequence_summary <- function(geno_anno_mlong) {
 funq_load_summary <- function(geno_anno_mlong) {
   geno_anno_mlong %>%
     dplyr::mutate(
-      fl = purrr::map2_int(.x = .data$genotype, .y = .data$FUNSEQ, .f = funseq_load)
+      fl = purrr::map2_int(.x = .data$n_alternative, .y = .data$FUNSEQ, .f = funseq_load)
     ) %>%
     dplyr::group_by(.data$individual) %>%
     dplyr::summarise(funseq_load = sum(.data$fl, na.rm = TRUE))
@@ -158,8 +160,7 @@ genetic_load_FUNSEQ_and_Consequence_summary <- function(vcf_genotypes, vcf_annot
 
 
   genotipos <- get_genotype(vcf_genotypes)
-  annotation <- get_var_annotation(vcf_genotypes, vcf_annotation, chr) %>%
-    dplyr::select(-.data$range_id)
+  annotation <- get_var_annotation(vcf_genotypes, vcf_annotation, chr)
 
   message("Computing load ...")
   # helper functions for parallel computation
