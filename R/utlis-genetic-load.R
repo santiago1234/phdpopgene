@@ -139,11 +139,14 @@ funq_load_summary <- function(geno_anno_mlong) {
 #'
 #' The funseq load for an individual is defined as: TODO
 #'
+#' NOTE: If an individual has non variant sites (i. e. 0|0) it wont be
+#' present in the results table.
+#'
 #' @inheritParams get_var_annotation
 #' @param cores int, the number of cores used for parallel computation. The
-#' computation is parallelized over the individuals (samples)
+#' computation is parallelized over the individuals (samples).
 #'
-#' @return A list with two elements
+#' @return A list with two elements: FS_l (funseq load) and CSQ_s
 genetic_load_FUNSEQ_and_Consequence_summary <- function(vcf_genotypes, vcf_annotation, chr, cores = 6) {
 
   # sanity check
