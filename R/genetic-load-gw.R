@@ -63,7 +63,7 @@ aggregate_res_cqs <- function(previous_res, current_res) {
 #' @examples
 gl_funseq_consequence_summary <- function(vcf_file, annotation_file, chr, cores = 4) {
 
-  chunk_size <- 1000 # load 1000 SNPs in each iteration
+  chunk_size <- 10000 # load 10000 SNPs in each iteration
 
   tab_geno <- VariantAnnotation::VcfFile(vcf_file, yieldSize = chunk_size)
   tab_annotation <- Rsamtools::TabixFile(annotation_file)
