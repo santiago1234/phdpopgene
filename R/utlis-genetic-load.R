@@ -71,7 +71,7 @@ merge_genotypes_with_annotation <- function(genotipos, annotation, h_samples) {
   all(h_samples %in% colnames(genotipos)) %>% stopifnot()
 
   genotipos[, c("varid", h_samples)] %>%
-    dplyr::inner_join(annotation) %>%
+    dplyr::inner_join(annotation, by = "varid") %>%
     tidyr::pivot_longer(
       cols = -c(.data$varid, .data$FUNSEQ, .data$Consequence),
       names_to = "individual", values_to = "genotype"
