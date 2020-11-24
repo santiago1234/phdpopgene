@@ -18,11 +18,15 @@ genetic_load_FUNSEQ_and_Consequence_summary(
 the variants in \code{vcf_genotypes}}
 
 \item{cores}{int, the number of cores used for parallel computation. The
-computation is parallelized over the individuals (samples)}
+computation is parallelized over the individuals (samples).}
 }
 \value{
-A list with two elements
+A list with two elements: FS_l (funseq load) and CSQ_s
 }
 \description{
 The funseq load for an individual is defined as: TODO
+}
+\details{
+NOTE: If an individual has non variant sites (i. e. 0|0) it wont be
+present in the results table.
 }

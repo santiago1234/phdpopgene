@@ -25,5 +25,7 @@ A data frame, with the following columns
 }
 \description{
 Merges the genotypes with the annotation (FUNSEQ and Consequences)
-and puts the table in long format
+and puts the table in long format. This function also removes
+all sites, for each individual-sample, that are homozygous (0|0) since
+these sites don't contribute to the load.
 }

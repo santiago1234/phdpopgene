@@ -4,10 +4,11 @@
 \alias{funseq_load}
 \title{Counts the number of alternative alleles}
 \usage{
-funseq_load(gtype, funseqscore)
+funseq_load(alt_alleles, funseqscore)
 }
 \arguments{
-\item{gtype}{The genotype, example, 0|0, 1|0, etc.}
+\item{alt_alleles}{int, how many alternative alles are in the genotype?,
+for example 0|0 is 0, 1|0 is 1,}
 
 \item{funseqscore}{the funseq score}
 }
@@ -16,6 +17,6 @@ a number 0, 1, or 2.
 }
 \description{
 A funseq score greater than 1.5 is considered deleterious. An indicator function
-that returns true if the variant is deleterious multiplied by the numer
+that returns true if the variant is deleterious multiplied by the number
 of alternative alleles in the genotype.
 }
