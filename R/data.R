@@ -12,3 +12,16 @@
 #' @format A VCF file with 300 variants and its corresponding annotation
 #' @source \url{https://github.com/santiago1234/phdpopgene/blob/main/data-raw/vcf_test_data.R}
 "test_anno_vcf"
+
+
+#' Ensembl Variation - Calculated variant consequences
+#'
+#' @format A data frame with 36 rows and 3 variables:
+#' \describe{
+#'   \item{Consequence}{Variant Consequence}
+#'   \item{Display_term}{Variant Consequence in a nice format}
+#'   \item{IMPACT}{Variant Impact, HIGH means deleterious}
+#'   ...
+#' }
+#' @source \url{https://m.ensembl.org/info/genome/variation/prediction/predicted_data.html}
+"variant_consequences"
