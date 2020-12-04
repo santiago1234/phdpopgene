@@ -46,6 +46,90 @@ aggregate_res_cqs <- function(previous_res, current_res) {
 }
 
 
+#' Process variants with multiple consequences
+#'
+#' Some consequences have the following format:
+#' \code{"splice_region_variant&intron_variant&non_coding_transcript_variant"}
+#' This function select the variants that has the highest IMPACT, the IMPACT
+#' rank is HIGH > MODERATE > LOW > MOFIFIER. If there are ties, then the first
+#' variant is selected.
+#'
+#' @param consequence_results A tibble the output consequence summary of the
+#' function \code{genetic_load_FUNSEQ_and_Consequence_summary}.
+#'
+#' @return A tibble with same format as input
+#'
+#' @examples
+aggregate_multiple_consequence_variants <- function(consequence_results) {
+
+  # helper functions
+  get_var <- function(impact) {
+    dplyr::filter(variant_consequences, .data$IMPACT == impact) %>%
+      dplyr::pull(.data$Consequence)
+  }
+
+  variant_rank <- list(
+    HIGH = get_var("HIGH"),
+    MODERATE = get_var("MODERATE"),
+    LOW = get_var("LOW"),
+    MODIFIER = get_var("MODIFIER")
+  )
+
+  highest_consequence_var <- function(consecuencias) {
+    # consecuencias is a character vector of consequences
+    extractor <- function(var_list, from) {
+      x_matching <- var_list[var_list %in% from]
+      x_matching[1]
+    }
+
+    # the order below gives the priority
+    if (any(consecuencias %in% variant_rank$HIGH)) {
+      return(extractor(consecuencias, variant_rank$HIGH))
+    }
+
+    if (any(consecuencias %in% variant_rank$MODERATE)) {
+      return(extractor(consecuencias, variant_rank$MODERATE))
+    }
+
+    if (any(consecuencias %in% variant_rank$LOW)) {
+      return(extractor(consecuencias, variant_rank$LOW))
+    }
+
+    if (any(consecuencias %in% variant_rank$MODIFIER)) {
+      return(extractor(consecuencias, variant_rank$MODIFIER))
+    }
+  }
+
+  worst_var <- function(multivar) {
+    # multivar is a string that contains multiple variants separated by
+    # the character &
+
+    multivar %>%
+      stringr::str_split("&") %>%
+      unlist() %>%
+      highest_consequence_var()
+  }
+
+  multiple_consequences <- dplyr::filter(consequence_results, stringr::str_detect(.data$Consequence, "&"))
+  unique_consequence <- dplyr::filter(consequence_results, !stringr::str_detect(.data$Consequence, "&"))
+
+
+  # get worst consequence and aggregate to unique consequence
+
+  multiple_consequences %>%
+    dplyr::mutate(
+      Consequence = purrr::map_chr(.data$Consequence, worst_var)
+    ) %>%
+    dplyr::bind_rows(unique_consequence) %>%
+    dplyr::group_by(.data$individual, .data$Consequence) %>%
+    dplyr::summarise(n_variants = sum(.data$n_variants)) %>%
+    dplyr::ungroup()
+
+
+
+}
+
+
 #' TODO
 #'
 #' FUNSEQ load? TODO
@@ -55,7 +139,7 @@ aggregate_res_cqs <- function(previous_res, current_res) {
 #' @param vcf_file
 #' @param annotation_file
 #' @param chr
-#' @param cores
+#' @param cores integer, number of cores used for parallel processing
 #'
 #' @return
 #' @export
@@ -102,6 +186,12 @@ gl_funseq_consequence_summary <- function(vcf_file, annotation_file, chr, cores 
 
   close(tab_geno)
 
+  # additional processing for consequence summary
+  # agregate multivars and add column with consequence
+  consequence_s_result <-
+    aggregate_multiple_consequence_variants(consequence_s_result) %>%
+    dplyr::inner_join(variant_consequences, by = "Consequence")
+
   message("<- DONE ->")
 
   list(
@@ -110,15 +200,3 @@ gl_funseq_consequence_summary <- function(vcf_file, annotation_file, chr, cores 
   )
 
 }
-
-# resultados <- gl_funseq_consequence_summary(
-#   vcf_file = "~/Dropbox/proyectos/201015-RotationProject/data/201018-PrepareInputDataForRfmix/vcf/query.chr22.vcf.gz",
-#   annotation_file = "~/Dropbox/proyectos/201015-RotationProject/data/201115-VariantAnnotation1k/ALL.chr22.phase3_shapeit2_mvncall_integrated_v5.20130502.sites.annotation.vcf.gz",
-#   chr = 22
-# )
-
-
-
-
-
-

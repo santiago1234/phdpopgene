@@ -46,7 +46,7 @@ funseq_load <- function(alt_alleles, funseqscore) {
 #'
 get_genotype <- function(vcf_genotypes) {
   VariantAnnotation::geno(vcf_genotypes)$GT %>%
-    tidyr::as_tibble(gnotype, rownames = "varid")
+    tidyr::as_tibble(rownames = "varid")
 }
 
 
@@ -103,8 +103,8 @@ merge_genotypes_with_annotation <- function(genotipos, annotation, h_samples) {
 #' }
 consequence_summary <- function(geno_anno_mlong) {
   geno_anno_mlong %>%
-    dplyr::group_by(individual, Consequence) %>%
-    dplyr::summarise(n_variants = sum(n_alternative)) %>%
+    dplyr::group_by(.data$individual, .data$Consequence) %>%
+    dplyr::summarise(n_variants = sum(.data$n_alternative)) %>%
     dplyr::ungroup()
 }
 
@@ -147,6 +147,11 @@ funq_load_summary <- function(geno_anno_mlong) {
 #' computation is parallelized over the individuals (samples).
 #'
 #' @return A list with two elements: FS_l (funseq load) and CSQ_s
+#' @export
+#' @example
+#' res <- genetic_load_FUNSEQ_and_Consequence_summary(test_vcf, test_anno_vcf,22, 1)
+#' cqs <- res$CSQ_s
+#' funseq <- res$FS_l
 genetic_load_FUNSEQ_and_Consequence_summary <- function(vcf_genotypes, vcf_annotation, chr, cores = 6) {
 
   # sanity check
@@ -180,8 +185,8 @@ genetic_load_FUNSEQ_and_Consequence_summary <- function(vcf_genotypes, vcf_annot
 
 
   # split sample to perform parallel computation
-  h_samples <- colnames(genotipos) %>%
-    .[2:length(.)]
+  h_samples <- colnames(genotipos)
+  h_samples <- h_samples[2:length(h_samples)]
 
   # split into n groups of size 10 each
   h_samples <- split(h_samples, ceiling(seq_along(h_samples) / 10))

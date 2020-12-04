@@ -7,7 +7,7 @@
 gl_funseq_consequence_summary(vcf_file, annotation_file, chr, cores = 4)
 }
 \arguments{
-\item{cores}{}
+\item{cores}{integer, number of cores used for parallel processing}
 }
 \value{
 
