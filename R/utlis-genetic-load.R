@@ -24,9 +24,9 @@ count_alt_alleles <- function(gtype) {
 #' @param alt_alleles int, how many alternative alles are in the genotype?,
 #' for example 0|0 is 0, 1|0 is 1,
 #' @param funseqscore the funseq score
+#' @prama cut_off_val, The value used, FUNSEQ score, to classify a variant as deleterious
 #' @return a number 0, 1, or 2.
-funseq_load <- function(alt_alleles, funseqscore) {
-  cut_off_val <- 1.5
+funseq_load <- function(alt_alleles, funseqscore, cut_off_val=1.5) {
   (funseqscore > cut_off_val) * alt_alleles
 }
 
@@ -109,25 +109,26 @@ consequence_summary <- function(geno_anno_mlong) {
 }
 
 
-#' How many variants with (FUNSEQ > 1.5) do each individual carry?
+#' How many variants with (FUNSEQ > cut_off_val) do each individual carry?
 #'
-#' For each individual computes how many variants with FUNSEQ > 1.5
+#' For each individual computes how many variants with FUNSEQ > cut_off_val
 #' carries.
 #'
 #' If the individual is 0|0 we add nothing to funseq_load
 #' If the individual is 1|0 or 0|1 we add 1 to funseq_load
 #' If the individual is 1|1 or 0|1 we add 2 to funseq_load
 #' @inheritParams consequence_summary
+#' @prama cut_off_val, The value used, FUNSEQ score, to classify a variant as deleterious
 #'
 #' @return A data frame, with the following columns
 #' \describe{
 #'   \item{individual}{individual id, example: HG00551}
-#'   \item{funseq_load}{How many variants have a funseqscore > 1.5}
+#'   \item{funseq_load}{How many variants have a funseqscore > cut_off_val}
 #' }
-funq_load_summary <- function(geno_anno_mlong) {
+funq_load_summary <- function(geno_anno_mlong, cut_off_val) {
   geno_anno_mlong %>%
     dplyr::mutate(
-      fl = purrr::map2_int(.x = .data$n_alternative, .y = .data$FUNSEQ, .f = funseq_load)
+      fl = purrr::map2_int(.x = .data$n_alternative, .y = .data$FUNSEQ, .f = funseq_load, cut_off_val = cut_off_val)
     ) %>%
     dplyr::group_by(.data$individual) %>%
     dplyr::summarise(funseq_load = sum(.data$fl, na.rm = TRUE))
@@ -145,14 +146,14 @@ funq_load_summary <- function(geno_anno_mlong) {
 #' @inheritParams get_var_annotation
 #' @param cores int, the number of cores used for parallel computation. The
 #' computation is parallelized over the individuals (samples).
-#'
+#' @prama cut_off_val, The value used, FUNSEQ score, to classify a variant as deleterious
 #' @return A list with two elements: FS_l (funseq load) and CSQ_s
 #' @export
 #' @example
 #' res <- genetic_load_FUNSEQ_and_Consequence_summary(test_vcf, test_anno_vcf,22, 1)
 #' cqs <- res$CSQ_s
 #' funseq <- res$FS_l
-genetic_load_FUNSEQ_and_Consequence_summary <- function(vcf_genotypes, vcf_annotation, chr, cores = 6) {
+genetic_load_FUNSEQ_and_Consequence_summary <- function(vcf_genotypes, vcf_annotation, chr, cores = 6, cut_off_val = 1.5) {
 
   # sanity check
   # check given chromosome matches range in vcf files
@@ -174,7 +175,7 @@ genetic_load_FUNSEQ_and_Consequence_summary <- function(vcf_genotypes, vcf_annot
   # helper functions for parallel computation
   fs_load <- function(h_ss) {
     m_l <- merge_genotypes_with_annotation(genotipos, annotation, h_ss)
-    funq_load_summary(m_l)
+    funq_load_summary(m_l, cut_off_val = cut_off_val)
 
   }
   csq_summary <- function(h_ss) {

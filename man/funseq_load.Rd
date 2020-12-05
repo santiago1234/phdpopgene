@@ -4,7 +4,7 @@
 \alias{funseq_load}
 \title{Counts the number of alternative alleles}
 \usage{
-funseq_load(alt_alleles, funseqscore)
+funseq_load(alt_alleles, funseqscore, cut_off_val = 1.5)
 }
 \arguments{
 \item{alt_alleles}{int, how many alternative alles are in the genotype?,

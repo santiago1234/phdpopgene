@@ -2,9 +2,9 @@
 % Please edit documentation in R/utlis-genetic-load.R
 \name{funq_load_summary}
 \alias{funq_load_summary}
-\title{How many variants with (FUNSEQ > 1.5) do each individual carry?}
+\title{How many variants with (FUNSEQ > cut_off_val) do each individual carry?}
 \usage{
-funq_load_summary(geno_anno_mlong)
+funq_load_summary(geno_anno_mlong, cut_off_val)
 }
 \arguments{
 \item{geno_anno_mlong}{Tibble with genotypes and annotation, the output
@@ -14,11 +14,11 @@ of \code{\link{merge_genotypes_with_annotation}}}
 A data frame, with the following columns
 \describe{
 \item{individual}{individual id, example: HG00551}
-\item{funseq_load}{How many variants have a funseqscore > 1.5}
+\item{funseq_load}{How many variants have a funseqscore > cut_off_val}
 }
 }
 \description{
-For each individual computes how many variants with FUNSEQ > 1.5
+For each individual computes how many variants with FUNSEQ > cut_off_val
 carries.
 }
 \details{

@@ -8,7 +8,8 @@ genetic_load_FUNSEQ_and_Consequence_summary(
   vcf_genotypes,
   vcf_annotation,
   chr,
-  cores = 6
+  cores = 6,
+  cut_off_val = 1.5
 )
 }
 \arguments{

@@ -140,12 +140,13 @@ aggregate_multiple_consequence_variants <- function(consequence_results) {
 #' @param annotation_file
 #' @param chr
 #' @param cores integer, number of cores used for parallel processing
+#' @prama cut_off_val, The value used, FUNSEQ score, to classify a variant as deleterious
 #'
 #' @return
 #' @export
 #'
 #' @examples
-gl_funseq_consequence_summary <- function(vcf_file, annotation_file, chr, cores = 4) {
+gl_funseq_consequence_summary <- function(vcf_file, annotation_file, chr, cores = 4, cut_off_val = 1.5) {
 
   chunk_size <- 10000 # load 10000 SNPs in each iteration
 
@@ -175,7 +176,8 @@ gl_funseq_consequence_summary <- function(vcf_file, annotation_file, chr, cores 
       vcf_genotypes = vcf_yield,
       vcf_annotation = annotaion_yield,
       chr = chr,
-      cores = cores
+      cores = cores,
+      cut_off_val = cut_off_val
     )
 
     # add results to tibble

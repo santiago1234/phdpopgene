@@ -4,7 +4,13 @@
 \alias{gl_funseq_consequence_summary}
 \title{TODO}
 \usage{
-gl_funseq_consequence_summary(vcf_file, annotation_file, chr, cores = 4)
+gl_funseq_consequence_summary(
+  vcf_file,
+  annotation_file,
+  chr,
+  cores = 4,
+  cut_off_val = 1.5
+)
 }
 \arguments{
 \item{cores}{integer, number of cores used for parallel processing}
