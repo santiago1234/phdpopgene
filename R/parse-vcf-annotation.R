@@ -56,6 +56,11 @@ get_CSQ <- function(vcf_annotation) {
   VariantAnnotation::info(vcf_annotation) %>%
     tidyr::as_tibble(rownames = "varid") %>%
     dplyr::select(.data$varid, .data$CSQ) %>%
+    # Sometimes CSQ may by empty
+    # this code removes CSQ that is empty
+    dplyr::mutate(tmp = purrr::map_int(.data$CSQ, length)) %>%
+    dplyr::filter(.data$tmp > 0) %>%
+    dplyr::select(-.data$tmp) %>%
     dplyr::mutate(CSQ = purrr::map_chr(.data$CSQ, function(x) x[[1]])) %>%
     tidyr::separate(.data$CSQ, into = csq_names, sep = "\\|") %>%
     dplyr::select(.data$varid, .data$Consequence)

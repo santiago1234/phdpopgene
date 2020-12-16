@@ -14,13 +14,13 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports: 
-    VariantAnnotation (>= 1.36.0),
+    VariantAnnotation,
     magrittr,
-    tidyr (>= 1.1.2),
-    dplyr (>= 1.0.2),
-    purrr (>= 0.3.4),
-    stringr (>= 1.4.0),
-    SummarizedExperiment (>= 1.20.0),
+    tidyr,
+    dplyr,
+    purrr,
+    stringr,
+    SummarizedExperiment,
     parallel,
     GenomicRanges,
     Rsamtools,

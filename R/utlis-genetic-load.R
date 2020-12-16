@@ -24,7 +24,7 @@ count_alt_alleles <- function(gtype) {
 #' @param alt_alleles int, how many alternative alles are in the genotype?,
 #' for example 0|0 is 0, 1|0 is 1,
 #' @param funseqscore the funseq score
-#' @prama cut_off_val, The value used, FUNSEQ score, to classify a variant as deleterious
+#' @param cut_off_val, The value used, FUNSEQ score, to classify a variant as deleterious
 #' @return a number 0, 1, or 2.
 funseq_load <- function(alt_alleles, funseqscore, cut_off_val=1.5) {
   (funseqscore > cut_off_val) * alt_alleles
@@ -118,7 +118,7 @@ consequence_summary <- function(geno_anno_mlong) {
 #' If the individual is 1|0 or 0|1 we add 1 to funseq_load
 #' If the individual is 1|1 or 0|1 we add 2 to funseq_load
 #' @inheritParams consequence_summary
-#' @prama cut_off_val, The value used, FUNSEQ score, to classify a variant as deleterious
+#' @param cut_off_val, The value used, FUNSEQ score, to classify a variant as deleterious
 #'
 #' @return A data frame, with the following columns
 #' \describe{
@@ -146,7 +146,7 @@ funq_load_summary <- function(geno_anno_mlong, cut_off_val) {
 #' @inheritParams get_var_annotation
 #' @param cores int, the number of cores used for parallel computation. The
 #' computation is parallelized over the individuals (samples).
-#' @prama cut_off_val, The value used, FUNSEQ score, to classify a variant as deleterious
+#' @param cut_off_val, The value used, FUNSEQ score, to classify a variant as deleterious
 #' @return A list with two elements: FS_l (funseq load) and CSQ_s
 #' @export
 #' @example
